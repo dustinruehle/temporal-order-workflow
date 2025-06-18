@@ -7,5 +7,5 @@ import io.temporal.activity.ActivityMethod;
 @ActivityInterface
 public interface PaymentActivity {
     @ActivityMethod
-    void process(PaymentRequest paymentRequest);
+    String process(PaymentRequest paymentRequest);
 }

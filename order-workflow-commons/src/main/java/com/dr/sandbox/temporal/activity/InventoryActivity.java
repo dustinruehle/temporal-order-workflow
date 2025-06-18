@@ -7,5 +7,5 @@ import io.temporal.activity.ActivityMethod;
 @ActivityInterface
 public interface InventoryActivity {
     @ActivityMethod
-    void reserveItems(InventoryReservationRequest reservationRequest);
+    String reserveItems(InventoryReservationRequest reservationRequest);
 }
