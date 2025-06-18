@@ -9,6 +9,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>21</maven.compiler.release>
     <temporal.version>1.29.0</temporal.version>
+    <logback.version>1.5.18</logback.version>
+    <spring-boot.version>3.4.6</spring-boot.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -16,6 +18,20 @@
         <groupId>io.temporal</groupId>
         <artifactId>temporal-sdk</artifactId>
         <version>${temporal.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <dependency>
