@@ -2,10 +2,10 @@ package com.dr.sandbox.temporal.workflow;
 
 import com.dr.sandbox.temporal.TaskQueues;
 import com.dr.sandbox.temporal.activity.InventoryActivity;
+import com.dr.sandbox.temporal.activity.NotificationActivity;
 import com.dr.sandbox.temporal.activity.PaymentActivity;
-import com.dr.sandbox.temporal.model.InventoryReservationRequest;
-import com.dr.sandbox.temporal.model.Order;
-import com.dr.sandbox.temporal.model.PaymentRequest;
+import com.dr.sandbox.temporal.activity.ShippingActivity;
+import com.dr.sandbox.temporal.model.*;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
@@ -31,6 +31,22 @@ public class OrderWorkflowImpl implements OrderWorkflow {
                     .build()
     );
 
+    private final ShippingActivity shippingActivities = Workflow.newActivityStub(
+            ShippingActivity.class,
+            ActivityOptions.newBuilder()
+                    .setTaskQueue(TaskQueues.SHIPPING_TASK_QUEUE_NAME)
+                    .setStartToCloseTimeout(Duration.ofMinutes(5))
+                    .build()
+    );
+
+    private final NotificationActivity notificationActivities = Workflow.newActivityStub(
+            NotificationActivity.class,
+            ActivityOptions.newBuilder()
+                    .setTaskQueue(TaskQueues.NOTIFICATION_TASK_QUEUE_NAME)
+                    .setStartToCloseTimeout(Duration.ofMinutes(5))
+                    .build()
+    );
+
     @Override
     public void processOrder(Order order) {
         logger.info("##### Processing order {}", order);
@@ -42,9 +58,9 @@ public class OrderWorkflowImpl implements OrderWorkflow {
                 order.paymentDetails().amount()
         );
 
-        String paymentId = this.paymentActivities.process(pr);
+        String paymentId = this.paymentActivities.processPayment(pr);
 
-        logger.info("##### Order Id {} Payment Id {}", order.orderId(), paymentId);
+        logger.info("##### Order Id {} \n\t\t\t Payment Id {}", order.orderId(), paymentId);
 
         InventoryReservationRequest irr = new InventoryReservationRequest(order.orderId(),
                 order.customerId(),
@@ -54,5 +70,40 @@ public class OrderWorkflowImpl implements OrderWorkflow {
 
         logger.info("##### Order Id {} \n\t\t\t Payment Id {} \n\t\t\t Inventory Reservation Id {}",
                 order.orderId(), paymentId, inventoryReservationRequestId);
+
+        Address address = new Address(order.shippingAddress(),
+                "Denver",
+                "CO",
+                "80223",
+                "USA");
+
+        ShippingRequest sr = new ShippingRequest(order.orderId(),
+                order.customerId(),
+                address,
+                order.items(),
+                "EXPRESS",
+                null,
+                null);
+
+        String shippingId = this.shippingActivities.ship(sr);
+
+        logger.info("##### Order Id {} \n\t\t\t Payment Id {} \n\t\t\t Inventory Reservation Id {} \n\t\t\t Shipping Id {}",
+                order.orderId(), paymentId, inventoryReservationRequestId,shippingId);
+
+        NotificationRequest nr = new NotificationRequest(order.orderId(),
+                order.customerId(),
+                "EMAIL",
+                "customer@home.com",
+                "Shipping Order",
+                "Some message",
+                null,
+                null);
+
+        String confirmationId = this.notificationActivities.sendConfirmation(nr);
+
+        logger.info("##### Order Id {} \n\t\t\t Payment Id {} \n\t\t\t Inventory Reservation Id {} " +
+                        "\n\t\t\t Shipping Id {} \n\t\t\t Confirmation Id {}",
+                order.orderId(), paymentId, inventoryReservationRequestId,shippingId, confirmationId);
+
     }
 }

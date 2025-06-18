@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.Map;
 
 public record NotificationRequest(
-        String notificationId,
         String orderId,
         String customerId,
         String channel,

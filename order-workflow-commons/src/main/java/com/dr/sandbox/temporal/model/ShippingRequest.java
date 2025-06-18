@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record ShippingRequest(
-        String shipmentId,
         String orderId,
         String customerId,
         Address address,

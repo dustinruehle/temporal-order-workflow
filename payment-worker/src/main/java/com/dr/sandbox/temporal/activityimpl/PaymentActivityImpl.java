@@ -12,7 +12,7 @@ public class PaymentActivityImpl implements PaymentActivity {
     public static final Logger logger = Workflow.getLogger(PaymentActivityImpl.class);
 
     @Override
-    public String process(PaymentRequest paymentRequest) {
+    public String processPayment(PaymentRequest paymentRequest) {
         int seconds = ThreadLocalRandom.current().nextInt(2, 11);
         logger.info("##### .....Request will complete in {}sec  for Payment Request {}", seconds, paymentRequest);
         try {
