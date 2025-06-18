@@ -24,28 +24,32 @@ This repository demonstrates a **services-based e-commerce order workflow** usin
 
 ---
 
-### System Diagram
+### High Level System Architecture
 
 ```mermaid
-graph TD
-    subgraph User
-      A[Order REST API (Spring Boot)]
+flowchart LR
+    User[User / External System]
+    subgraph Application
+        Controller[REST API Controller]
+        OrderWorkflowClient[Workflow Client]
+        WorkerApp[Worker Process]
     end
-    subgraph Temporal Stack
-      B[Temporal Server]
-      C[Temporal Web UI]
+    subgraph Temporal
+        TemporalServer[Temporal Server (Cloud/Self-Hosted)]
     end
-    subgraph Workers
-      D[Payment Worker]
-      E[Inventory Worker]
-      F[Shipping Worker]
-      G[Notification Worker]
+    subgraph External
+        InventorySystem[Inventory Service]
+        PaymentGateway[Payment Gateway]
+        ShippingAPI[Shipping Provider API]
+        NotificationSystem[Notification System (Email/SMS)]
     end
 
-    A-- "Start Workflow" -->B
-    B-- "Invoke Activities" -->D
-    B-- "Invoke Activities" -->E
-    B-- "Invoke Activities" -->F
-    B-- "Invoke Activities" -->G
-    B-- "API/Monitoring" -->C
+    User --> Controller
+    Controller --> OrderWorkflowClient
+    OrderWorkflowClient -->|Start Workflow| TemporalServer
+    TemporalServer --> WorkerApp
+    WorkerApp -->|Activity: Reserve Inventory| InventorySystem
+    WorkerApp -->|Activity: Process Payment| PaymentGateway
+    WorkerApp -->|Activity: Ship Order| ShippingAPI
+    WorkerApp -->|Activity: Send Notification| NotificationSystem
 ```
