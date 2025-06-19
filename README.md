@@ -142,7 +142,7 @@ mvn exec:java -Dexec.mainClass="com.dr.sandbox.temporal.activityimpl.PaymentWork
 ```
 6. Launch the Inventory worker, from a new terminal window, navigate to the `temporal-order-workflow` directory...
 ```
-cd inverntory-worker
+cd inventory-worker
 mvn exec:java -Dexec.mainClass="com.dr.sandbox.temporal.activityimpl.InventoryWorker"
 ```
 7. Launch the Shipping worker, from a new terminal window, navigate to the `temporal-order-workflow` directory...
