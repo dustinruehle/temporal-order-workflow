@@ -28,22 +28,7 @@ This repository demonstrates a **services-based e-commerce order workflow** usin
 
 ```mermaid
 flowchart TD
-    User[User / External System]
-    Controller[REST API Controller]
-    WorkflowClient[Workflow Client]
-    TemporalServer[Temporal Server]
-    WorkerApp[Temporal Worker]
-    InventorySystem[Inventory Service]
-    PaymentGateway[Payment Gateway]
-    ShippingAPI[Shipping Provider API]
-    NotificationSystem[Notification System]
-
-    User --> Controller
-    Controller --> WorkflowClient
-    WorkflowClient -->|Start Workflow| TemporalServer
-    TemporalServer --> WorkerApp
-    WorkerApp --> InventorySystem
-    WorkerApp --> PaymentGateway
-    WorkerApp --> ShippingAPI
-    WorkerApp --> NotificationSystem
+    User["User / External System"] -- HTTP Post JSON --> Controller["Spring REST API Controller"]
+    Controller -- Start Workflow --> OrderWorker["Order Workflow"]
+    OrderWorker --> PaymentActivity["Process Payment"] & InventoryActivity["Reserve Inventory"] & ShippingActivity["Ship Order"] & NotificationActivity["Notify Customer"]
 ```
