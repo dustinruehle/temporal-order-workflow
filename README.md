@@ -37,6 +37,9 @@ flowchart TD
     Controller -- Start Workflow --> OrderWorker["Order Workflow"]
     OrderWorker --> PaymentActivity["Process Payment"] & InventoryActivity["Reserve Inventory"] & ShippingActivity["Ship Order"] & NotificationActivity["Notify Customer"]
 ```
+
+### Simple Sequence
+**Note**: for each step there is a workflow and activity implementation and the sequence happens for all worker/activities
 ```mermaid
 sequenceDiagram
     participant User
