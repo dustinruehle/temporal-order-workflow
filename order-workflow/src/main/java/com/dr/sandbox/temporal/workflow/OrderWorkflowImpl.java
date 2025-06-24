@@ -51,6 +51,15 @@ public class OrderWorkflowImpl implements OrderWorkflow {
     public void processOrder(Order order) {
         logger.info("##### Processing order {}", order);
 
+        InventoryReservationRequest irr = new InventoryReservationRequest(order.orderId(),
+                order.customerId(),
+                order.items());
+
+        String inventoryReservationRequestId = this.inventoryActivities.reserveItems(irr);
+
+        logger.info("##### Order Id {} \n\t\t\t Inventory Reservation Id {}",
+                order.orderId(), inventoryReservationRequestId);
+
         PaymentRequest pr = new PaymentRequest(order.orderId(),
                 order.paymentDetails().cardNumber(),
                 order.paymentDetails().expiryDate(),
@@ -60,26 +69,12 @@ public class OrderWorkflowImpl implements OrderWorkflow {
 
         String paymentId = this.paymentActivities.processPayment(pr);
 
-        logger.info("##### Order Id {} \n\t\t\t Payment Id {}", order.orderId(), paymentId);
-
-        InventoryReservationRequest irr = new InventoryReservationRequest(order.orderId(),
-                order.customerId(),
-                order.items());
-
-        String inventoryReservationRequestId = this.inventoryActivities.reserveItems(irr);
-
-        logger.info("##### Order Id {} \n\t\t\t Payment Id {} \n\t\t\t Inventory Reservation Id {}",
-                order.orderId(), paymentId, inventoryReservationRequestId);
-
-        Address address = new Address(order.shippingAddress(),
-                "Denver",
-                "CO",
-                "80223",
-                "USA");
+        logger.info("##### Order Id {} \n\t\t\t Inventory Reservation Id {} \n\t\t\t Payment Id {}",
+                order.orderId(), inventoryReservationRequestId, paymentId);
 
         ShippingRequest sr = new ShippingRequest(order.orderId(),
                 order.customerId(),
-                address,
+                order.shippingAddress(),
                 order.items(),
                 "EXPRESS",
                 null,
@@ -87,8 +82,8 @@ public class OrderWorkflowImpl implements OrderWorkflow {
 
         String shippingId = this.shippingActivities.ship(sr);
 
-        logger.info("##### Order Id {} \n\t\t\t Payment Id {} \n\t\t\t Inventory Reservation Id {} \n\t\t\t Shipping Id {}",
-                order.orderId(), paymentId, inventoryReservationRequestId,shippingId);
+        logger.info("##### Order Id {} \n\t\t\t Inventory Reservation Id {} \n\t\t\t Payment Id {} \n\t\t\t Shipping Id {}",
+                order.orderId(), inventoryReservationRequestId, paymentId,shippingId);
 
         NotificationRequest nr = new NotificationRequest(order.orderId(),
                 order.customerId(),
@@ -101,9 +96,9 @@ public class OrderWorkflowImpl implements OrderWorkflow {
 
         String confirmationId = this.notificationActivities.sendConfirmation(nr);
 
-        logger.info("##### Order Id {} \n\t\t\t Payment Id {} \n\t\t\t Inventory Reservation Id {} " +
+        logger.info("##### Order Id {} \n\t\t\t Inventory Reservation Id {} \n\t\t\t Payment Id {} " +
                         "\n\t\t\t Shipping Id {} \n\t\t\t Confirmation Id {}",
-                order.orderId(), paymentId, inventoryReservationRequestId,shippingId, confirmationId);
+                order.orderId(), inventoryReservationRequestId, paymentId,shippingId, confirmationId);
 
     }
 }

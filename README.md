@@ -158,6 +158,47 @@ mvn exec:java -Dexec.mainClass="com.dr.sandbox.temporal.activityimpl.Notificatio
 
 You will have 7 separate terminal windows.... this will allow you to watch the logs when the workflow is executing
 
+### Run the workflow: Creating an Order
+
+```
+curl -X POST http://localhost:8080/orders \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerId": "customer-123",
+    "shippingAddress": {
+      "street": "123 Main Street",
+      "city": "Denver",
+      "state": "CO",
+      "postalCode": "80203",
+      "country": "USA"
+    },
+    "paymentDetails": {
+      "cardNumber": "4242424242424242",
+      "expiryDate": "12/30",
+      "cvv": "123",
+      "amount": 109.99
+    },
+    "items": [
+      { "sku": "SKU-1001", "quantity": 2 },
+      { "sku": "SKU-2002", "quantity": 1 }
+    ]
+  }'
+```
+
+**Sample response:**
+
+```
+ORDER_1dbeae7e-363b-4acd-b8d0-8ddb56fa6919
+```
+
+**To view the workflow running**
+- Navigate to `http:localhost:8088`
+- Select the workflow running
+  - each step will randomly take between 2-10sec
+- The completed flow should looking something like:
+
+![Executed Order Workflow UI](images/sample-order-flow-ui.png)
+
 ### Future work
 
 - Add tests

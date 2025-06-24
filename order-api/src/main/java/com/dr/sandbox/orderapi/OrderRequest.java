@@ -8,7 +8,7 @@ import java.util.List;
 public record OrderRequest(
         PaymentDetails paymentDetails,
         List<Item> items,
-        String shippingAddress,
+        Address shippingAddress,
         String customerId
 ) {
 }

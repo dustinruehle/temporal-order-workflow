@@ -5,7 +5,7 @@ import java.util.List;
 public record Order(
         PaymentDetails paymentDetails,
         List<Item> items,
-        String shippingAddress,
+        Address shippingAddress,
         String customerId,
         String orderId
 ) {
