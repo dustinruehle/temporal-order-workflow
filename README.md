@@ -192,7 +192,7 @@ ORDER_1dbeae7e-363b-4acd-b8d0-8ddb56fa6919
 ```
 
 **To view the workflow running**
-- Navigate to [http:localhost:8088](http:localhost:8088)
+- Navigate to [http:localhost:8888](http:localhost:8888)
 - Select the workflow running
   - each step will randomly take between 2-10sec
 - The completed flow should looking something like:
