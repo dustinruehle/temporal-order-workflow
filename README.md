@@ -199,6 +199,22 @@ ORDER_1dbeae7e-363b-4acd-b8d0-8ddb56fa6919
 
 ![Executed Order Workflow UI](images/sample-order-flow-ui.png)
 
+### Get the status of a workflow (using a workflow query method)
+```
+curl -X GET "http://localhost:8080/orders/status/[wofklowId]"
+```
+
+### "Soft" Cancel the workflow: Cancel an Order (using a workflow signal method)
+```
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"workflowId": "workflowId' \
+  http://localhost:8080/orders/cancel
+```
+
+Note: every 3rd request will kick off a "human in the loop" simulation in the reserve inventory
+request. That will create a pause for 60sec for simulation purposes.
+
 ### Future work
 
 - Add tests

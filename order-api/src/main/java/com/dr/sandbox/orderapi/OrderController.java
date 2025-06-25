@@ -5,13 +5,19 @@ import com.dr.sandbox.temporal.model.Address;
 import com.dr.sandbox.temporal.model.Order;
 import com.dr.sandbox.temporal.workflow.OrderWorkflow;
 import com.dr.sandbox.temporal.workflow.OrderWorkflowImpl;
+import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowExecutionDescription;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.client.WorkflowStub;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -61,4 +67,24 @@ public class OrderController {
 
         return workflowId;
     }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<Void> cancelOrder(@RequestBody CancelRequest cancelRequest) {
+        logger.info("\n\n\t\t\t##### Canceling order {}\n\n\t\t\t", cancelRequest.workflowId());
+        OrderWorkflow workflow = workflowClient.newWorkflowStub(OrderWorkflow.class, cancelRequest.workflowId());
+        workflow.cancelOrder(cancelRequest.workflowId());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/status/{workflowId}")
+    public ResponseEntity<Map<String, String>> getOrderStatus(@PathVariable("workflowId") String workflowId) {
+        OrderWorkflow workflow = workflowClient.newWorkflowStub(OrderWorkflow.class, workflowId);
+        String status = workflow.getCurrentStatus();
+
+        Map<String, String> result = new HashMap<>();
+        result.put("workflowId", workflowId);
+        result.put("status", status);
+        return ResponseEntity.ok(result);
+    }
+
 }

@@ -11,15 +11,34 @@ import java.util.concurrent.ThreadLocalRandom;
 public class InventoryActivityImpl implements InventoryActivity {
     public static final Logger logger = Workflow.getLogger(InventoryActivityImpl.class);
 
+    private int numOfRequests = 0; // used for simulations
+
     @Override
     public String reserveItems(InventoryReservationRequest reservationRequest) {
         int seconds = ThreadLocalRandom.current().nextInt(2, 11);
-        logger.info("##### Request will complete in {}sec for Inventory Reservation Request {}", seconds, reservationRequest);
-        try {
-            Thread.sleep(seconds * 1000L);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.error("Sleep was interrupted.");        }
+
+        numOfRequests++;
+        logger.info("################################ Number of Inventory Requests={}", numOfRequests);
+
+        // on every 3rd request, simulate a long 30 second human in the loop
+        // TODO: add child workflow call to simulate this
+        if (numOfRequests % 3 == 0) {
+            logger.info("##### Inventory Reservation Request {} requires a human-in-the-loop inventory reservation", reservationRequest);
+            try {
+                Thread.sleep(60 * 1000L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.error("Sleep was interrupted.");        }
+
+        } else {
+            logger.info("##### Request will complete in {}sec for Inventory Reservation Request {}", seconds, reservationRequest);
+            try {
+                Thread.sleep(seconds * 1000L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.error("Sleep was interrupted.");        }
+
+        }
 
         String reservationId = UUID.randomUUID().toString();
 

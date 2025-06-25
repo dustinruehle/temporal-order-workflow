@@ -15,6 +15,9 @@ import java.time.Duration;
 public class OrderWorkflowImpl implements OrderWorkflow {
     public static final Logger logger = Workflow.getLogger(OrderWorkflowImpl.class);
 
+    private boolean cancelled = false;
+    private String currentStatus = "Not Started";
+
     private final PaymentActivity paymentActivities = Workflow.newActivityStub(
             PaymentActivity.class,
             ActivityOptions.newBuilder()
@@ -49,12 +52,15 @@ public class OrderWorkflowImpl implements OrderWorkflow {
 
     @Override
     public void processOrder(Order order) {
+        this.currentStatus = "Started";
         logger.info("##### Processing order {}", order);
 
         InventoryReservationRequest irr = new InventoryReservationRequest(order.orderId(),
                 order.customerId(),
                 order.items());
 
+        if (this.cancelled) return;
+        this.currentStatus = "RESERVING INVENTORY";
         String inventoryReservationRequestId = this.inventoryActivities.reserveItems(irr);
 
         logger.info("##### Order Id {} \n\t\t\t Inventory Reservation Id {}",
@@ -67,6 +73,8 @@ public class OrderWorkflowImpl implements OrderWorkflow {
                 order.paymentDetails().amount()
         );
 
+        if (this.cancelled) return;
+        this.currentStatus = "PROCESSING PAYMENT";
         String paymentId = this.paymentActivities.processPayment(pr);
 
         logger.info("##### Order Id {} \n\t\t\t Inventory Reservation Id {} \n\t\t\t Payment Id {}",
@@ -80,6 +88,8 @@ public class OrderWorkflowImpl implements OrderWorkflow {
                 null,
                 null);
 
+        if (this.cancelled) return;
+        this.currentStatus = "SHIPPING ORDER";
         String shippingId = this.shippingActivities.ship(sr);
 
         logger.info("##### Order Id {} \n\t\t\t Inventory Reservation Id {} \n\t\t\t Payment Id {} \n\t\t\t Shipping Id {}",
@@ -94,11 +104,27 @@ public class OrderWorkflowImpl implements OrderWorkflow {
                 null,
                 null);
 
+        if (this.cancelled) return;
+        this.currentStatus = "NOTIFYING CUSTOMER";
         String confirmationId = this.notificationActivities.sendConfirmation(nr);
 
+        this.currentStatus = "COMPLETED";
         logger.info("##### Order Id {} \n\t\t\t Inventory Reservation Id {} \n\t\t\t Payment Id {} " +
                         "\n\t\t\t Shipping Id {} \n\t\t\t Confirmation Id {}",
                 order.orderId(), inventoryReservationRequestId, paymentId,shippingId, confirmationId);
 
+    }
+
+    @Override
+    public void cancelOrder(String workflowId) {
+        this.cancelled = true;
+        this.currentStatus = "ORDER CANCELED";
+        logger.info("################################ Order canceled {}", workflowId);
+
+    }
+
+    @Override
+    public String getCurrentStatus() {
+        return this.currentStatus;
     }
 }
