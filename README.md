@@ -199,12 +199,18 @@ ORDER_1dbeae7e-363b-4acd-b8d0-8ddb56fa6919
 
 ![Executed Order Workflow UI](images/sample-order-flow-ui.png)
 
-### Get the status of a workflow (using a workflow query method)
+### Demonstrating aynchronous interactions
+
+#### Get the status of a workflow (using a workflow query method)
 ```
 curl -X GET "http://localhost:8080/orders/status/[wofklowId]"
 ```
 
-### "Soft" Cancel the workflow: Cancel an Order (using a workflow signal method)
+#### "Soft" Cancel the workflow: Cancel an Order (using a workflow signal method)
+Every 3rd request will kick off a "human in the loop" simulation in the reserve inventory
+request. That will create a pause for 60sec for simulation purposes. Once you are in the that
+human in the loop simulation, use the curl command below to cancel the workflow.
+
 ```
 curl -X POST \
   -H "Content-Type: application/json" \
@@ -212,13 +218,25 @@ curl -X POST \
   http://localhost:8080/orders/cancel
 ```
 
-Note: every 3rd request will kick off a "human in the loop" simulation in the reserve inventory
-request. That will create a pause for 60sec for simulation purposes.
+### "Retry of Payment processing step in the Order Workflow"
+
+`DEFAULT_RETRY_OPTIONS` are defined in the Order Workflow implementation. They are:
+
+- `initialInterval`	Wait 2s before first retry
+- `backoffCoefficient`	Wait doubles each time: 5s, 10s, 15s etc
+- `maximumAttempts`	Retry up to 3 times total
+- `maximumInterval`	Cap retry delay at 10s
+
+To flex the retry options, start a 4th workflow (remember the 3rd workflow will 
+simulate a human in the loop for the inventory request) and then request 4 in the
+payment activity will throw a simulated exception forcing the retries to execute. On the
+3rd retry attempt (request 6 in the Payment Worker logs) the payment will succeed. Navigating
+in the UI to the workflow you will see the retry attempts.
 
 ### Future work
 
 - Add tests
-- Add an async interaction
+- ~~Add an async interaction~~
 - Deploy into k8s cluster to allow for easy worker scaling
 - Run JMeter (or equivalent) to stress the system with lots of orders 
 - Implement Saga pattern to do compensating steps for errors in steps of the workflow

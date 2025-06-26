@@ -7,6 +7,7 @@ import com.dr.sandbox.temporal.activity.PaymentActivity;
 import com.dr.sandbox.temporal.activity.ShippingActivity;
 import com.dr.sandbox.temporal.model.*;
 import io.temporal.activity.ActivityOptions;
+import io.temporal.common.RetryOptions;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 
@@ -18,11 +19,20 @@ public class OrderWorkflowImpl implements OrderWorkflow {
     private boolean cancelled = false;
     private String currentStatus = "Not Started";
 
+    private static final RetryOptions DEFAULT_RETRY_OPTIONS = RetryOptions.newBuilder()
+            .setInitialInterval(Duration.ofSeconds(5))
+            .setBackoffCoefficient(2.0)
+            .setMaximumAttempts(3)
+            .setMaximumInterval(Duration.ofSeconds(20))
+            .build();
+
+
     private final PaymentActivity paymentActivities = Workflow.newActivityStub(
             PaymentActivity.class,
             ActivityOptions.newBuilder()
                     .setTaskQueue(TaskQueues.PAYMENT_TASK_QUEUE_NAME)
                     .setStartToCloseTimeout(Duration.ofMinutes(5))
+                    .setRetryOptions(DEFAULT_RETRY_OPTIONS)
                     .build()
     );
 
