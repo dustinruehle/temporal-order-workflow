@@ -2,14 +2,14 @@ package com.dr.sandbox.temporal.activityimpl;
 
 import com.dr.sandbox.temporal.activity.NotificationActivity;
 import com.dr.sandbox.temporal.model.NotificationRequest;
-import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class NotificationActivityImpl implements NotificationActivity {
-    public static final Logger logger = Workflow.getLogger(NotificationActivityImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(NotificationActivityImpl.class);
 
     @Override
     public String sendConfirmation(NotificationRequest notificationRequest) {

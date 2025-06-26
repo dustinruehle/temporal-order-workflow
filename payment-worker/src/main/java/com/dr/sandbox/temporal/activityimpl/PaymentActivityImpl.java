@@ -2,14 +2,14 @@ package com.dr.sandbox.temporal.activityimpl;
 
 import com.dr.sandbox.temporal.activity.PaymentActivity;
 import com.dr.sandbox.temporal.model.PaymentRequest;
-import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class PaymentActivityImpl implements PaymentActivity {
-    public static final Logger logger = Workflow.getLogger(PaymentActivityImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(PaymentActivityImpl.class);
 
     private int numOfRequests = 0; // used for simulations
 
@@ -18,7 +18,7 @@ public class PaymentActivityImpl implements PaymentActivity {
         int seconds = ThreadLocalRandom.current().nextInt(2, 11);
 
         numOfRequests++;
-        logger.info("################################ Number of Inventory Requests={}", numOfRequests);
+        logger.info("################################ Number of Payment Requests={}", numOfRequests);
 
         // for requests 4, 5 simulate an error to demo the retry options on the workflow for processing the payment
         if (numOfRequests > 3 && numOfRequests < 6) {

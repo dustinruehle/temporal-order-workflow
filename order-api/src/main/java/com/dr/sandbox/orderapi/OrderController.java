@@ -4,14 +4,10 @@ import com.dr.sandbox.temporal.TaskQueues;
 import com.dr.sandbox.temporal.model.Address;
 import com.dr.sandbox.temporal.model.Order;
 import com.dr.sandbox.temporal.workflow.OrderWorkflow;
-import com.dr.sandbox.temporal.workflow.OrderWorkflowImpl;
-import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowClient;
-import io.temporal.client.WorkflowExecutionDescription;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.client.WorkflowStub;
-import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
-    public static final Logger logger = Workflow.getLogger(OrderController.class);
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     private final WorkflowClient workflowClient;
 

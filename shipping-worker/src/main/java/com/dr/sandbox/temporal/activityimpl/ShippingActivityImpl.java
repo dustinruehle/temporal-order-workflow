@@ -2,14 +2,14 @@ package com.dr.sandbox.temporal.activityimpl;
 
 import com.dr.sandbox.temporal.activity.ShippingActivity;
 import com.dr.sandbox.temporal.model.ShippingRequest;
-import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ShippingActivityImpl implements ShippingActivity {
-    public static final Logger logger = Workflow.getLogger(ShippingActivityImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ShippingActivityImpl.class);
 
     @Override
     public String ship(ShippingRequest shippingRequest) {

@@ -2,14 +2,14 @@ package com.dr.sandbox.temporal.activityimpl;
 
 import com.dr.sandbox.temporal.activity.InventoryActivity;
 import com.dr.sandbox.temporal.model.InventoryReservationRequest;
-import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class InventoryActivityImpl implements InventoryActivity {
-    public static final Logger logger = Workflow.getLogger(InventoryActivityImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(InventoryActivityImpl.class);
 
     private int numOfRequests = 0; // used for simulations
 

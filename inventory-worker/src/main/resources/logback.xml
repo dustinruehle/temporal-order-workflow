@@ -27,7 +27,7 @@
             <pattern>%d{HH:mm:ss.SSS} %-5level - %msg %n</pattern>
         </encoder>
     </appender>
-    <logger name="com.dr.sandbox.orderapi.OrderController" level="INFO" additivity="false">
+    <logger name="com.dr.sandbox.temporal.activityimpl.InventoryActivityImpl" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE" />
     </logger>
     <root level="INFO">
