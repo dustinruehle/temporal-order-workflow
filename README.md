@@ -65,6 +65,8 @@ Each step has it's own worker, task queue and activity implementation.
 
 ### High Level System Architecture
 
+![Order Worflow](images/order-workflow-temporal-high-level.png)
+
 ```mermaid
 flowchart TD
     User["User / External System"] -- HTTP Post JSON --> Controller["Spring REST API Controller"]
